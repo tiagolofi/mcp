@@ -1,0 +1,24 @@
+{
+    "tools": [
+        {
+            "id": 1,
+            "description": "calcula quantidade de registros de um nome em um período de tempo",
+            "variables": {
+                "prompt": "Quantas pessoas de nome josé foram registradas entre 1980 e 2000?"
+            },
+            "uri": "https://servicodados.ibge.gov.br/api/v2/censos/nomes/jose",
+            "token": null,
+            "method": "GET"
+        },
+        {
+            "id": 2,
+            "description": "faz um resumo de uma casa em Harry Potter",
+            "variables": {
+                "prompt": "Me dê um resumo sobre a casa Sonserina de Harry Potter"
+            },
+            "uri": "https://wizard-world-api.herokuapp.com/Houses/805fd37a-65ae-4fe5-b336-d767b8b7c73a",
+            "token": null,
+            "method": "GET"
+        }
+    ]
+}
