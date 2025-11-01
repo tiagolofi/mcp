@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>MCP Client</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f6fa;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #1e272e;
+            color: #f1f2f6;
+            position: relative;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.hidden {
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            top: 10px;
+            right: -35px;
+            background: #1e272e;
+            color: white;
+            border: none;
+            padding: 8px 10px;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            padding: 1rem;
+            border-bottom: 1px solid #333;
+        }
+
+        .tool-item {
+            padding: 10px;
+            border-bottom: 1px solid #2f3640;
+        }
+
+        .tool-item:hover {
+            background: #353b48;
+            cursor: pointer;
+        }
+
+        .tool-id {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .tool-desc {
+            font-size: 0.85rem;
+            color: #dcdde1;
+        }
+
+        /* Conteúdo principal */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Área do feed */
+        .feed {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            max-width: 60%;
+            margin-bottom: 1rem;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            line-height: 1.4;
+        }
+
+        .user {
+            align-self: flex-end;
+            background: #4b7bec;
+            color: white;
+        }
+
+        .bot {
+            align-self: flex-start;
+            background: #dcdde1;
+            color: #2f3640;
+        }
+
+        /* Barra inferior */
+        .bottom-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f1f2f6;
+            border-top: 1px solid #dcdde1;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #4b7bec;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #eb3b5a;
+            color: white;
+        }
+
+        .btn-danger.active {
+            background: #ff4757;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            width: 300px;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .option {
+            background: #f1f2f6;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .option:hover {
+            background: #dcdde1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <button class="sidebar-toggle" id="toggleSidebar">☰</button>
+        <h2>Ferramentas</h2>
+        <div id="toolsList"></div>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div class="main">
+        <div class="feed" id="feed"></div>
+
+        <div class="bottom-bar">
+            <button class="btn btn-primary" id="abrirModal">Escolher opção</button>
+            <button class="btn btn-danger" id="perguntarBtn">Perguntar</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3>Escolha uma opção</h3>
+            <div class="option" data-value="1">Opção A (toolId = 1)</div>
+            <div class="option" data-value="2">Opção B (toolId = 2)</div>
+            <div class="option" data-value="3">Opção B (toolId = 3)</div>
+            <button class="btn btn-primary" id="fecharModal">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        const toolsList = document.getElementById('toolsList');
+        const feed = document.getElementById('feed');
+        const modal = document.getElementById('modal');
+        const abrirModal = document.getElementById('abrirModal');
+        const fecharModal = document.getElementById('fecharModal');
+        const perguntarBtn = document.getElementById('perguntarBtn');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('sidebar');
+
+        let pendingValue = null;
+        let toolsData = []; // Guardar as ferramentas carregadas
+
+        // Alterna sidebar retrátil
+        toggleSidebar.addEventListener('click', () => {
+            sidebar.classList.toggle('hidden');
+        });
+
+        // Abrir modal
+        abrirModal.addEventListener('click', () => modal.style.display = 'flex');
+        fecharModal.addEventListener('click', () => modal.style.display = 'none');
+
+        // Escolher opção no modal
+        document.querySelectorAll('.option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                pendingValue = opt.dataset.value;
+                addMessage('Você selecionou a opção ' + pendingValue, 'user');
+                modal.style.display = 'none';
+            });
+        });
+
+        // Botão perguntar
+        perguntarBtn.addEventListener('click', async () => {
+            if (!pendingValue) {
+                addMessage('Nenhuma opção selecionada.', 'bot');
+                return;
+            }
+
+            perguntarBtn.classList.add('active');
+
+            try {
+                const url = `http://localhost:8080/mcp?toolId=${pendingValue}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                const text = data.output[0].content[0].text;
+
+                addMessage(text, 'bot');
+            } catch (err) {
+                addMessage('Erro ao consultar: ' + err.message, 'bot');
+            } finally {
+                perguntarBtn.classList.remove('active');
+                pendingValue = null;
+            }
+        });
+
+        // Adiciona mensagens ao feed
+        function addMessage(text, type) {
+            const div = document.createElement('div');
+            div.className = 'message ' + type;
+            div.innerText = text;
+            feed.appendChild(div);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        // Carregar ferramentas no sidebar
+        async function carregarFerramentas() {
+            try {
+                const resp = await fetch('http://localhost:8080/mcp/tools');
+                const data = await resp.json();
+
+                if (!data.tools || data.tools.length === 0) {
+                    toolsList.innerHTML = "<p style='color:#888;'>Nenhuma ferramenta encontrada.</p>";
+                    return;
+                }
+
+                toolsData = data.tools; // salvar array globalmente
+
+                // Sidebar
+                toolsList.innerHTML = toolsData.map(tool => `
+                <div class="tool-item">
+                    <div class="tool-id">#${tool.id}</div>
+                    <div class="tool-desc">${tool.description}</div>
+                    <div class="tool-prompt">
+                        <strong>Prompt:</strong> ${tool.variables?.prompt || '—'}
+                    </div>
+                </div>
+                `).join('');
+
+                // Modal: criar opções dinamicamente
+                const modalContent = modal.querySelector('.modal-content');
+                // Remove opções antigas
+                modalContent.querySelectorAll('.option').forEach(el => el.remove());
+
+                toolsData.forEach(tool => {
+                    const div = document.createElement('div');
+                    div.className = 'option';
+                    div.dataset.value = tool.id;
+                    div.innerText = `#${tool.id} - ${tool.description}`;
+                    div.addEventListener('click', () => {
+                      pendingValue = tool.id;
+                      addMessage(`Você selecionou: ${tool.description}`, 'user');
+                      modal.style.display = 'none';
+                    });
+                    // Inserir antes do botão fechar
+                    modalContent.insertBefore(div, fecharModal);
+                });
+
+        //         toolsList.innerHTML = data.tools.map(tool => `
+        //         <div class="tool-item">
+        //             <div class="tool-id"><strong>ID:</strong> ${tool.id}</div>
+        //             <div class="tool-desc"><strong>Descrição:</strong> ${tool.description}</div>
+        //             <div class="tool-uri"><strong>URI:</strong> ${tool.uri}</div>
+        //             <div class="tool-method"><strong>Método:</strong> ${tool.method}</div>
+        //             <div class="tool-prompt">
+        //               <strong>Prompt:</strong> ${tool.variables?.prompt || '—'}
+        //             </div>
+        //         </div>
+        // `).join('');
+            } catch (error) {
+                toolsList.innerHTML = "<p style='color:red;'>Erro ao carregar ferramentas.</p>";
+            }
+        }
+
+        carregarFerramentas();
+    </script>
+</body>
+
+</html>

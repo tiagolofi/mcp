@@ -19,6 +19,16 @@
             "uri": "https://wizard-world-api.herokuapp.com/Houses/805fd37a-65ae-4fe5-b336-d767b8b7c73a",
             "token": null,
             "method": "GET"
+        },
+        {
+            "id": 3,
+            "description": "Resumo de certas motivações de Bayek de Siuá",
+            "variables": {
+                "prompt": "Em Assassins Creed Origins, qual a motivação central em torno do término do relacionamento entre Bayek e Aya?"
+            },
+            "uri": null,
+            "token": null,
+            "method": null
         }
     ]
 }

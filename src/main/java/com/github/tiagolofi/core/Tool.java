@@ -122,6 +122,7 @@ public class Tool {
                 return false;
             }
         }
+        this.variables.put(DATA, " ");
         return false;
     }
 

@@ -1,5 +1,7 @@
 package com.github.tiagolofi.resource;
 
+import java.io.InputStream;
+
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.RestQuery;
@@ -19,6 +21,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/mcp")
 @RequestScoped
@@ -39,6 +42,21 @@ public class McpClientServerResource {
 
     @Inject
     OpenAiConfigs openAiConfigs;
+
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/feed")
+    public Response feed() {
+        InputStream html = getClass().getResourceAsStream("/META-INF/resources/feed.html");
+
+        if (html == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                .entity("Página não encontrada")
+                .build();
+        }
+
+        return Response.ok(html).build();
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
