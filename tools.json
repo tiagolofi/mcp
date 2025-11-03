@@ -7,7 +7,6 @@
                 "prompt": "Quantas pessoas de nome josé foram registradas entre 1980 e 2000?"
             },
             "uri": "https://servicodados.ibge.gov.br/api/v2/censos/nomes/jose",
-            "token": null,
             "method": "GET"
         },
         {
@@ -17,7 +16,6 @@
                 "prompt": "Me dê um resumo sobre a casa Sonserina de Harry Potter"
             },
             "uri": "https://wizard-world-api.herokuapp.com/Houses/805fd37a-65ae-4fe5-b336-d767b8b7c73a",
-            "token": null,
             "method": "GET"
         },
         {
@@ -27,8 +25,16 @@
                 "prompt": "Em Assassins Creed Origins, qual a motivação central em torno do término do relacionamento entre Bayek e Aya?"
             },
             "uri": null,
-            "token": null,
             "method": null
+        },
+        {
+            "id": 4,
+            "description": "Resumo de indicadores do cliente",
+            "variables": {
+                "prompt": "Como um consultor de bussiness de um escritório de advocacia que possui vários clientes. Apresente os indicadores de consumo de pontos de fidelidade de um cliente."
+            },
+            "uri": "https://ctaa-api-c8223e5a6c78.herokuapp.com/consulta/indicadores",
+            "method": "POST"
         }
     ]
 }

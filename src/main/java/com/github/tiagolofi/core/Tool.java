@@ -24,8 +24,6 @@ public class Tool {
     @JsonProperty
     private String uri;
     @JsonProperty
-    private String token;
-    @JsonProperty
     private String method;
 
     public void setId(Long id) {
@@ -60,14 +58,6 @@ public class Tool {
         this.uri = uri;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public String getMethod() {
         return method;
     }
@@ -80,35 +70,29 @@ public class Tool {
         return execute(null);
     }
 
-    public <T> boolean execute(T data) {
+    @SuppressWarnings("unchecked")
+    public boolean execute(@SuppressWarnings("rawtypes") Request request) {
+
+        RestClientBuilder clientBuilder = RestClientBuilder.newBuilder()
+            .baseUri(this.uri);
+
+        if (request != null) {
+            request.getHeaders().forEach((k, v) -> clientBuilder.header((String) k, (String) v));
+        }
+
         if(this.method != null) {
             try {
-                GenericClient client = RestClientBuilder.newBuilder()
-                    .baseUri(this.uri)
-                    .build(GenericClient.class); 
+
+                GenericClient client = clientBuilder.build(GenericClient.class); 
 
                 Response response;
-
-                if (token != null) {
-                    switch (this.method) {
-                        case GET:
-                            response = client.get(token);
-                            break;
-                        case POST:
-                            response = client.post(token, data);
-                            break;
-                        default:
-                            response = Response.status(400).build();
-                            break;
-                    }
-                }
 
                 switch (this.method) {
                     case GET:
                         response = client.get();
                         break;
                     case POST:
-                        response = client.post(data);
+                        response = client.post(request.getData());
                         break;
                     default:
                         response = Response.status(400).build();
@@ -132,9 +116,9 @@ public class Tool {
                 {
                     id: %s,
                     uri: %s,
-                    token: *****,
-                    method: %s
+                    method: %s,
+                    prompt: %s
                 }
-                """, String.valueOf(id), variables, uri, method);
+                """, String.valueOf(id), uri, method, variables.getOrDefault("prompt", ""));
     }
 }

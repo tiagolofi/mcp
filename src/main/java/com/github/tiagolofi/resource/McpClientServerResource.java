@@ -12,12 +12,15 @@ import com.github.tiagolofi.client.OpenAiRequest;
 import com.github.tiagolofi.client.OpenAiRequestBuilder;
 import com.github.tiagolofi.client.OpenAiResponse;
 import com.github.tiagolofi.core.ConfigTools;
+import com.github.tiagolofi.core.Request;
 import com.github.tiagolofi.core.Tool;
 import com.github.tiagolofi.core.Tools;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -57,12 +60,21 @@ public class McpClientServerResource {
 
         return Response.ok(html).build();
     }
-
+    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public OpenAiResponse mcpClient(@RestQuery Long toolId) {
         Tool tool = tools.getTool(toolId);
         tool.execute();
+        return openAi.getResponse(BEARER + openAiConfigs.apiKey(), getRequestOpenAi(tool));
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public OpenAiResponse mcpClient(@RestQuery Long toolId, @SuppressWarnings("rawtypes") Request request) {
+        Tool tool = tools.getTool(toolId);
+        tool.execute(request);
         return openAi.getResponse(BEARER + openAiConfigs.apiKey(), getRequestOpenAi(tool));
     }
 
