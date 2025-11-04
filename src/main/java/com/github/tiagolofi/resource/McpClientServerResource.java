@@ -70,16 +70,6 @@ public class McpClientServerResource {
     public Tools getTools() {
         return tools;
     }
-    
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({"user"})
-    public OpenAiResponse mcpClientServerGet(@RestQuery Long toolId) {
-        Tool tool = tools.getTool(toolId);
-        tool.execute();
-        log.infof("Tool Executada: %s", tool);
-        return openAi.getResponse(BEARER + openAiConfigs.apiKey(), getRequestOpenAi(tool));
-    }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @POST

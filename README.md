@@ -42,20 +42,63 @@ Dados: {{data}}
 
 ## `Tool`
 
+É uma funcionalidade que vai ser exposta no serviço que se baseia em dois passos principais:
+
 1. Executa uma requisição HTTP para uma API externa e em seguida;
 2. Passa o prompt para o Client que faz requisição para a OpenAi com os dados necessários.
+
+### Exemplo 1 - API de nomes do IBGE
 
 ```json
 {
     "id": 1,
     "description": "calcula quantidade de registros de um nome em um período de tempo",
     "variables": {
-        "prompt": "Quantas pessoas de nome josé foram registradas entre 1980 e 2000?"
+        "prompt": "Quantas pessoas com o nome informado foram registradas entre 1980 e 2000?"
     },
-    "uri": "https://servicodados.ibge.gov.br/api/v2/censos/nomes/jose",
-    "token": "",
+    "uri": "https://servicodados.ibge.gov.br/api/v2/censos/nomes",
     "method": "GET"
 }
+```
+
+```sh
+curl -X 'POST' \
+  'http://localhost:8080/mcp?toolId=1' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJjd...' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "paths": [
+    "moises"
+  ]
+}'
+```
+
+### Exemplo 2 - Casas do Harry Potter
+
+```json
+{
+    "id": 2,
+    "description": "faz um resumo de uma casa em Harry Potter",
+    "variables": {
+        "prompt": "Me dê um resumo sobre essa casa de Harry Potter"
+    },
+    "uri": "https://wizard-world-api.herokuapp.com/Houses",
+    "method": "GET"
+}
+```
+
+```sh
+curl -X 'POST' \
+  'http://localhost:8080/mcp?toolId=2' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJjd...' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "paths": [
+    "805fd37a-65ae-4fe5-b336-d767b8b7c73a"
+  ]
+}'
 ```
 
 OBS: headers e parâmetros (query e path) podem ser passados via requisição usando `POST /mcp`

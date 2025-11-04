@@ -72,8 +72,7 @@ public class Tool {
 
     public <T> boolean execute(Request<T> request) {
 
-        RestClientBuilder clientBuilder = RestClientBuilder.newBuilder()
-            .baseUri(this.uri);
+        RestClientBuilder clientBuilder = RestClientBuilder.newBuilder();
 
         if (request != null && request.getHeaders() != null) {
             request.getHeaders().forEach(header -> clientBuilder.header(header.getName(), header.getValue()));
@@ -89,6 +88,8 @@ public class Tool {
             request.getParams().forEach(param -> this.uri += String.format("%s=%s&", param.getName(), param.getValue()));
             this.uri = this.uri.substring(0, this.uri.length() - 1);
         }
+
+        clientBuilder.baseUri(this.uri);
 
         if(this.method != null) {
             try {
