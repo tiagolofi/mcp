@@ -15,7 +15,7 @@ Esta aplicação provê comunicação entre a OpenAI e qualquer API que utilize 
 quarkus.rest.client.openai_url=https://api.openai.com
 openai.model=gpt-4.1
 openai.api.key=sk-proj-...
-openai.prompt.id=promptId
+openai.prompt.id=pmpt_6904952...
 openai.prompt.version=3
 
 # apenas para segurança mínima
