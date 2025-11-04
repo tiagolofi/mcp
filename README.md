@@ -17,6 +17,15 @@ openai.model=gpt-4.1
 openai.api.key=sk-proj-...
 openai.prompt.id=promptId
 openai.prompt.version=3
+
+# apenas para segurança mínima
+mcp.username=tiagolofi
+mcp.password=********
+mcp.roles=admin,user
+
+# chaves RSA
+private.key=MIIEvAIB...
+public.key=MIIBIjANB...
 ```
 
 - Um arquivo com uma lista de Tool: [tools](tools.json)
@@ -49,7 +58,7 @@ Dados: {{data}}
 }
 ```
 
-OBS: o token (Bearer) deve ser passado caso necessário autenticação do recurso.
+OBS: headers e parâmetros (query e path) podem ser passados via requisição usando `POST /mcp`
 
 ## `Tools`
 

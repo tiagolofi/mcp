@@ -1,7 +1,5 @@
 package com.github.tiagolofi.resource;
 
-import java.io.InputStream;
-
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.RestQuery;
@@ -15,7 +13,11 @@ import com.github.tiagolofi.core.ConfigTools;
 import com.github.tiagolofi.core.Request;
 import com.github.tiagolofi.core.Tool;
 import com.github.tiagolofi.core.Tools;
+import com.github.tiagolofi.security.LoginUsuarioSenha;
+import com.github.tiagolofi.security.TokenJwt;
 
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -46,26 +48,36 @@ public class McpClientServerResource {
     @Inject
     OpenAiConfigs openAiConfigs;
 
-    @GET
-    @Produces(MediaType.TEXT_HTML)
-    @Path("/feed")
-    public Response feed() {
-        InputStream html = getClass().getResourceAsStream("/META-INF/resources/feed.html");
+    @Inject
+    TokenJwt tokenJwt;
 
-        if (html == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                .entity("Página não encontrada")
-                .build();
+    @POST
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @PermitAll
+    @Path("/login")
+    public Response login(LoginUsuarioSenha requisicao) {
+        if (tokenJwt.validar(requisicao)) {
+            return Response.status(200).entity(tokenJwt.geraToken()).build();
         }
+        return Response.status(401).build();
+    }
 
-        return Response.ok(html).build();
+    @GET
+    @Produces(MediaType.APPLICATION_JSON) 
+    @Path("/tools")
+    @RolesAllowed({"user"})
+    public Tools getTools() {
+        return tools;
     }
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public OpenAiResponse mcpClient(@RestQuery Long toolId) {
+    @RolesAllowed({"user"})
+    public OpenAiResponse mcpClientServerGet(@RestQuery Long toolId) {
         Tool tool = tools.getTool(toolId);
         tool.execute();
+        log.infof("Tool Executada: %s", tool);
         return openAi.getResponse(BEARER + openAiConfigs.apiKey(), getRequestOpenAi(tool));
     }
 
@@ -73,17 +85,12 @@ public class McpClientServerResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public OpenAiResponse mcpClient(@RestQuery Long toolId, Request request) {
+    @RolesAllowed({"user"})
+    public OpenAiResponse mcpClientServerPost(@RestQuery Long toolId, Request request) {
         Tool tool = tools.getTool(toolId);
         tool.execute(request);
+        log.infof("Tool Executada: %s", tool);
         return openAi.getResponse(BEARER + openAiConfigs.apiKey(), getRequestOpenAi(tool));
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON) 
-    @Path("/tools")
-    public Tools getTools() {
-        return tools;
     }
 
     private OpenAiRequest getRequestOpenAi(Tool tool) {

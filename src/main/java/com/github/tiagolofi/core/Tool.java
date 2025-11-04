@@ -90,8 +90,6 @@ public class Tool {
             this.uri = this.uri.substring(0, this.uri.length() - 1);
         }
 
-        System.out.println(this.uri);
-
         if(this.method != null) {
             try {
 
