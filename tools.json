@@ -13,7 +13,7 @@
             "id": 2,
             "description": "faz um resumo de uma casa em Harry Potter",
             "variables": {
-                "prompt": "Me dê um resumo sobre a casa Sonserina de Harry Potter"
+                "prompt": "Me dê um resumo sobre a casa Corvinal de Harry Potter"
             },
             "uri": "https://wizard-world-api.herokuapp.com/Houses/805fd37a-65ae-4fe5-b336-d767b8b7c73a",
             "method": "GET"

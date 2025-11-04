@@ -70,15 +70,27 @@ public class Tool {
         return execute(null);
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean execute(@SuppressWarnings("rawtypes") Request request) {
+    public <T> boolean execute(Request<T> request) {
 
         RestClientBuilder clientBuilder = RestClientBuilder.newBuilder()
             .baseUri(this.uri);
 
-        if (request != null) {
-            request.getHeaders().forEach((k, v) -> clientBuilder.header((String) k, (String) v));
+        if (request != null && request.getHeaders() != null) {
+            request.getHeaders().forEach(header -> clientBuilder.header(header.getName(), header.getValue()));
         }
+
+        if (request != null && request.getPaths() != null) {
+            request.getPaths().forEach(v -> this.uri += String.format("/%s/", v));
+            this.uri = this.uri.substring(0, this.uri.length() - 1);
+        }
+
+        if (request != null && request.getParams() != null) {
+            this.uri = this.uri + "?";
+            request.getParams().forEach(param -> this.uri += String.format("%s=%s&", param.getName(), param.getValue()));
+            this.uri = this.uri.substring(0, this.uri.length() - 1);
+        }
+
+        System.out.println(this.uri);
 
         if(this.method != null) {
             try {

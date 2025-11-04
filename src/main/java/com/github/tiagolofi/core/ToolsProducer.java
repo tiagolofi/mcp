@@ -10,7 +10,7 @@ import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 
 @ApplicationScoped
-public class ToolProducer {
+public class ToolsProducer {
     
     @Produces
     public static Tools tools(InjectionPoint point) throws IOException {

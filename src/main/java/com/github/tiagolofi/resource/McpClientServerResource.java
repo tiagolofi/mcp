@@ -33,7 +33,7 @@ public class McpClientServerResource {
     private static final String BEARER = "Bearer ";
 
     @Inject
-    @ConfigTools(filename = "tools")
+    @ConfigTools
     Tools tools;
 
     @Inject
@@ -69,10 +69,11 @@ public class McpClientServerResource {
         return openAi.getResponse(BEARER + openAiConfigs.apiKey(), getRequestOpenAi(tool));
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public OpenAiResponse mcpClient(@RestQuery Long toolId, @SuppressWarnings("rawtypes") Request request) {
+    public OpenAiResponse mcpClient(@RestQuery Long toolId, Request request) {
         Tool tool = tools.getTool(toolId);
         tool.execute(request);
         return openAi.getResponse(BEARER + openAiConfigs.apiKey(), getRequestOpenAi(tool));
