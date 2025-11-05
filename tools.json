@@ -14,13 +14,13 @@
         },
         {
             "id": 3,
-            "description": "Análise psicológica do personagem Bayek de Siuá, de Assassins Creed Origins",
+            "description": "Tool genérica para utilizar o PROMPT livre",
             "uri": null,
             "method": null
         },
         {
             "id": 4,
-            "description": "Últimas notícias sobre o futebol nordestino",
+            "description": "Tool genérica para utilizar o WEB_SEARCH",
             "uri": null,
             "method": null
         }
