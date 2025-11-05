@@ -182,3 +182,22 @@ curl -X 'POST' \
   "type": "WEB_SEARCH"
 }'
 ```
+
+## Autenticação de um serviço utilizado em uma Tool
+
+Utilize o enpoint `/external/login` para se autenticar nos serviços de interesse, por exemplo:
+
+```sh
+curl -X 'POST' \
+  'http://localhost:8080/external/login' \
+  -H 'accept: */*' \
+  -H 'Authorization: Bearer eyJjdH...' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "uri": "http://localhost:8080/login",
+  "headers": null,
+  "data": {"username": "tiagolofi", "password": "*******"}
+}'
+```
+
+A resposta dessa requisição é a resposta da URI para esse serviço. Depois disso você deve utilizar o token imediatamente ou armazená-lo em um local seguro para que possa ser reutilizado.
