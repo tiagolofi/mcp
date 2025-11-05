@@ -1,5 +1,6 @@
 package com.github.tiagolofi.core;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
@@ -12,6 +13,7 @@ import jakarta.ws.rs.core.Response;
 public class Tool {
 
     private static final String DATA = "data";
+    private static final String PROMPT = "prompt";
     private static final String GET = "GET";
     private static final String POST = "POST";
 
@@ -19,8 +21,6 @@ public class Tool {
     private Long id;
     @JsonProperty
     private String description;
-    @JsonProperty
-    private Map<String, String> variables;
     @JsonProperty
     private String uri;
     @JsonProperty
@@ -42,14 +42,6 @@ public class Tool {
         return this.description;
     }
 
-    public void setVariables(Map<String, String> variables) {
-        this.variables = variables;
-    }
-
-    public Map<String, String> getVariables() {
-        return this.variables;
-    }
-
     public String getUri() {
         return uri;
     }
@@ -66,11 +58,13 @@ public class Tool {
         this.method = method;
     }
 
-    public boolean execute() {
-        return execute(null);
-    }
+    public <T> Map<String, String> execute(Request<T> request) {
 
-    public <T> boolean execute(Request<T> request) {
+        Map<String, String> variables = new HashMap<>();
+
+        if (request.getPrompt() != null) {
+            variables.put(PROMPT, request.getPrompt());
+        }
 
         RestClientBuilder clientBuilder = RestClientBuilder.newBuilder();
 
@@ -78,18 +72,20 @@ public class Tool {
             request.getHeaders().forEach(header -> clientBuilder.header(header.getName(), header.getValue()));
         }
 
-        if (request != null && request.getPaths() != null) {
-            request.getPaths().forEach(v -> this.uri += String.format("/%s/", v));
-            this.uri = this.uri.substring(0, this.uri.length() - 1);
-        }
+        if (this.uri != null) {
+            if (request != null && request.getPaths() != null) {
+                request.getPaths().forEach(v -> this.uri += String.format("/%s/", v));
+                this.uri = this.uri.substring(0, this.uri.length() - 1);
+            }
 
-        if (request != null && request.getParams() != null) {
-            this.uri = this.uri + "?";
-            request.getParams().forEach(param -> this.uri += String.format("%s=%s&", param.getName(), param.getValue()));
-            this.uri = this.uri.substring(0, this.uri.length() - 1);
-        }
+            if (request != null && request.getParams() != null) {
+                this.uri = this.uri + "?";
+                request.getParams().forEach(param -> this.uri += String.format("%s=%s&", param.getName(), param.getValue()));
+                this.uri = this.uri.substring(0, this.uri.length() - 1);
+            }
 
-        clientBuilder.baseUri(this.uri);
+            clientBuilder.baseUri(this.uri);
+        }
 
         if(this.method != null) {
             try {
@@ -110,15 +106,15 @@ public class Tool {
                         break;
                 }
 
-                this.variables.put(DATA, response.readEntity(String.class));
-                return true;
+                variables.put(DATA, response.readEntity(String.class));
+                return variables;
             } catch (Exception e) {
                 e.printStackTrace();
-                return false;
+                return null;
             }
         }
-        this.variables.put(DATA, " ");
-        return false;
+        variables.put(DATA, " ");
+        return variables;
     }
 
     @Override
@@ -126,10 +122,10 @@ public class Tool {
         return String.format("""
                 {
                     id: %s,
+                    description: %s,
                     uri: %s,
-                    method: %s,
-                    prompt: %s
+                    method: %s
                 }
-                """, String.valueOf(id), uri, method, variables.getOrDefault("prompt", ""));
+                """, String.valueOf(id), description, uri, method);
     }
 }

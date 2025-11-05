@@ -2,39 +2,27 @@
     "tools": [
         {
             "id": 1,
-            "description": "calcula quantidade de registros de um nome em um período de tempo",
-            "variables": {
-                "prompt": "Quantas pessoas do nome informado foram registradas entre 1980 e 2000?"
-            },
+            "description": "calcula quantidade de nascidos com um determinado nome em um período de tempo",
             "uri": "https://servicodados.ibge.gov.br/api/v2/censos/nomes",
             "method": "GET"
         },
         {
             "id": 2,
-            "description": "faz um resumo de uma casa em Harry Potter",
-            "variables": {
-                "prompt": "Me dê um resumo sobre essa casa de Harry Potter"
-            },
+            "description": "faz um resumo sobre qualquer casa em Harry Potter",
             "uri": "https://wizard-world-api.herokuapp.com/Houses",
             "method": "GET"
         },
         {
             "id": 3,
-            "description": "Resumo de certas motivações de Bayek de Siuá",
-            "variables": {
-                "prompt": "Em Assassins Creed Origins, qual a motivação central em torno do término do relacionamento entre Bayek e Aya?"
-            },
+            "description": "Análise psicológica do personagem Bayek de Siuá, de Assassins Creed Origins",
             "uri": null,
             "method": null
         },
         {
             "id": 4,
-            "description": "Resumo de indicadores do cliente",
-            "variables": {
-                "prompt": "Como um consultor de bussiness de um escritório de advocacia que possui vários clientes. Apresente os indicadores de consumo de pontos de fidelidade de um cliente."
-            },
-            "uri": "https://ctaa-api-c8223e5a6c78.herokuapp.com/consulta/indicadores",
-            "method": "POST"
+            "description": "Últimas notícias sobre o futebol nordestino",
+            "uri": null,
+            "method": null
         }
     ]
 }

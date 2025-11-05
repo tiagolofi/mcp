@@ -2,10 +2,14 @@ package com.github.tiagolofi.core;
 
 import java.util.List;
 
+import com.github.tiagolofi.client.OpenAiRequestType;
+
 public class Request<T> {
     private List<NameValuePair> headers;
     private List<NameValuePair> params;
     private List<String> paths;
+    private String prompt;
+    private OpenAiRequestType type;
     private T data;
 
     public List<NameValuePair> getHeaders() {
@@ -30,6 +34,22 @@ public class Request<T> {
 
     public void setPaths(List<String> paths) {
         this.paths = paths;
+    }
+
+    public String getPrompt() {
+        return prompt;
+    }
+
+    public void setPrompt(String prompt) {
+        this.prompt = prompt;
+    }
+
+    public OpenAiRequestType getType() {
+        return type;
+    }
+
+    public void setType(OpenAiRequestType type) {
+        this.type = type;
     }
 
     public T getData() {
